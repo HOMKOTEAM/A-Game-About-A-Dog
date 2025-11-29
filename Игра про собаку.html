@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Уход за собакой + больше функций</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #dogContainer {
+    margin-top: 20px;
+  }
+
+  #dogImage {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    border: 3px solid #555;
+    margin-bottom: 10px;
+    transition: all 0.5s ease;
+  }
+
+  .status {
+    margin: 10px 0;
+    font-size: 1.2em;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background-color: #00796b;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #004d40;
+  }
+
+  #energyBar {
+    width: 80%;
+    height: 20px;
+    background-color: #ccc;
+    margin: 10px auto;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  #energyLevel {
+    height: 100%;
+    width: 100%;
+    background-color: #ff9800;
+    transition: width 0.5s;
+  }
+</style>
+</head>
+<body>
+
+<h1>Ухаживай за своей собакой!</h1>
+
+<div id="dogContainer">
+  <img 
+    id="dogImage" 
+    src="dog.avif" 
+    alt="Собака" 
+  />
+  <div class="status" id="hungerStatus">Голод: 50</div>
+  <div class="status" id="hygieneStatus">Грязь: 50</div>
+  <div class="status" id="happinessStatus">Настроение: 50</div>
+  <div class="status" id="energyStatus">Энергия: 50</div>
+  <div id="energyBar"><div id="energyLevel"></div></div>
+</div>
+
+<div>
+  <button onclick="feed()">Кормить</button>
+  <button onclick="clean()">Чистить</button>
+  <button onclick="play()">Играть</button>
+  <button onclick="walk()">Гулять</button>
+  <button onclick="kiss()">Поцеловать</button>
+  <button onclick="check()">Проверить настроение</button>
+  <button onclick="brushTeeth()">Чистить зубы</button>
+  <button onclick="sleep()">Спать</button>
+</div>
+
+<!-- Звуковые эффекты -->
+<audio id="eatSound" src="eat.mp3" preload="auto"></audio>
+<audio id="cleanSound" src="clean.mp3" preload="auto"></audio>
+<audio id="playSound" src="play.mp3" preload="auto"></audio>
+<audio id="walkSound" src="walk.mp3" preload="auto"></audio>
+<audio id="kissSound" src="kiss.mp3" preload="auto"></audio>
+<audio id="teethSound" src="teeth.mp3" preload="auto"></audio>
+<audio id="sleepSound" src="sleep.mp3" preload="auto"></audio>
+
+<script>
+  // Изначальные параметры
+  let hunger = 50;
+  let hygiene = 50;
+  let happiness = 50;
+  let energy = 50;
+
+  // Элементы статусов
+  const hungerElem = document.getElementById('hungerStatus');
+  const hygieneElem = document.getElementById('hygieneStatus');
+  const happinessElem = document.getElementById('happinessStatus');
+  const energyElem = document.getElementById('energyStatus');
+  const energyBar = document.getElementById('energyLevel');
+
+  // Обновление отображения статусов
+  function updateStatus() {
+    hungerElem.textContent = 'Голод: ' + hunger;
+    hygieneElem.textContent = 'Грязь: ' + hygiene;
+    happinessElem.textContent = 'Настроение: ' + happiness;
+    energyElem.textContent = 'Энергия: ' + energy;
+    energyBar.style.width = energy + '%';
+  }
+
+  // Безопасное воспроизведение звука
+  function safePlay(audio) {
+    audio.play().catch(error => {
+      console.error('Ошибка воспроизведения звука:', error);
+    });
+  }
+
+  // Действия
+  function feed() {
+    safePlay(document.getElementById('eatSound'));
+    hunger -= 20;
+    if (hunger < 0) hunger = 0;
+    happiness += 5;
+    if (happiness > 100) happiness = 100;
+    updateStatus();
+    animateDog('happy');
+  }
+
+  function clean() {
+    safePlay(document.getElementById('cleanSound'));
+    hygiene -= 25;
+    if (hygiene < 0) hygiene = 0;
+    happiness += 2;
+    if (happiness > 100) happiness = 100;
+    updateStatus();
+    animateDog('clean');
+  }
+
+  function play() {
+    safePlay(document.getElementById('playSound'));
+    happiness += 20;
+    if (happiness > 100) happiness = 100;
+    hunger += 10;
+    if (hunger > 100) hunger = 100;
+    hygiene += 5;
+    if (hygiene > 100) hygiene = 100;
+    energy -= 15;
+    if (energy < 0) energy = 0;
+    updateStatus();
+    animateDog('happy');
+  }
+
+  function walk() {
+    safePlay(document.getElementById('walkSound'));
+    happiness += 15;
+    if (happiness > 100) happiness = 100;
+    hunger += 15;
+    if (hunger > 100) hunger = 100;
+    hygiene += 10;
+    if (hygiene > 100) hygiene = 100;
+    energy -= 20;
+    if (energy < 0) energy = 0;
+    updateStatus();
+    animateDog('walk');
+  }
+
+  function kiss() {
+    safePlay(document.getElementById('kissSound'));
+    happiness += 10;
+    if (happiness > 100) happiness = 100;
+    alert("Собака счастлива от поцелуя!");
+    updateStatus();
+  }
+
+  function check() {
+    let mood;
+    if (happiness >= 75) {
+      mood = 'Счастлива!';
+    } else if (happiness >= 50) {
+      mood = 'Неплохо.';
+    } else if (happiness >= 25) {
+      mood = 'Грустно.';
+    } else {
+      mood = 'Грустит!';
+    }
+    alert('Настроение собаки: ' + mood);
+  }
+
+
+
+
+  function sleep() {
+  safePlay(document.getElementById('sleepSound'));
+  energy += 20
+    alert('Собака отдохнула');
+  }
+
+  function brushTeeth() {
+    safePlay(document.getElementById('teethSound'));
+    hygiene -= 30;
+    if (hygiene < 0) hygiene = 0;
+    happiness += 3;
+    if (happiness > 100) happiness = 100;
+    updateStatus();
+    animateDog('fresh');
+  }
+
+  // Анимации смены картинки в зависимости от действий или настроения
+  function animateDog(state) {
+    const img = document.getElementById('dogImage');
+    if (state === 'happy') {
+      // улыбающееся изображение
+      img.src = 'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?ixlib=rb-4.0.4&auto=format&fit=crop&w=800&q=80';
+    } else if (state === 'clean') {
+      // ухоженная
+      img.src = 'https://images.unsplash.com/photo-1616365485294-0460b084e175?ixlib=rb-4.0.4&auto=format&fit=crop&w=800&q=80';
+    } else if (state === 'walk') {
+      // на прогулке
+      img.src = 'https://images.unsplash.com/photo-1614634299248-d6cc5365ab21?ixlib=rb-4.0.4&auto=format&fit=crop&w=800&q=80';
+    } else if (state === 'fresh') {
+      // чистая и сияющая
+      img.src = 'https://images.unsplash.com/photo-1606459086324-56063bde42b4?ixlib=rb-4.0.4&auto=format&fit=crop&w=800&q=80';
+    } else {
+      // исходное изображение
+      document.getElementById('dogImage').src = 'https://img.freepik.com/premium-photo/charming-wellgroomed-pomeranian-sits-gray-background_392339-1467.jpg';
+    }
+  }
+
+  // Автоматическое изменение показателей со временем
+  setInterval(() => {
+    hunger += 1;
+    if (hunger > 100) hunger = 100;
+    hygiene += 3;
+    if (hygiene > 100) hygiene = 100;
+    happiness -= 3;
+    if (happiness < 0) happiness = 0;
+    energy -= 2;
+    if (energy < 0) energy = 0;
+    updateStatus();
+  }, 3000);
+
+  // Восстановление энергии
+  setInterval(() => {
+    if (energy < 100) {
+      energy += 5;
+      if (energy > 100) energy = 100;
+      updateStatus();
+    }
+  }, 5000);
+
+  // Инициализация
+  updateStatus();
+</script>
+</body>
+</html> 
